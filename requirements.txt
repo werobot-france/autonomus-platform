@@ -1,0 +1,5 @@
+RPI.GPIO
+adafruit-blinka
+gpiozero
+adafruit-circuitpython-crickit
+

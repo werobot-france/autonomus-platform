@@ -59,9 +59,9 @@ class Robot:
                 deltaTheta += 2*pi
             
             if abs(deltaTheta) < pi/2:
-                pwm = (cruiseSpeed + (1-cruiseSpeed)*(deltaTheta/(pi / 2)))
-                self.leftMotor.throttle = -pwm
-                self.rightMotor.throttle = pwm
+                pwm = (1-cruiseSpeed)*(deltaTheta/(pi / 2))
+                self.leftMotor.throttle = -(cruiseSpeed - pwm)
+                self.rightMotor.throttle = cruiseSpeed + pwm
             else:
                 self.goToOrientation(targetTheta)
                     
