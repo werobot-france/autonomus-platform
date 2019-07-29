@@ -11,7 +11,7 @@ class Robot:
 	x = 0
 	y = 0
 	theta = 0
-	precision = 100
+	precision = 350
 	path = []
 	R = []
 	T = []
@@ -22,6 +22,14 @@ class Robot:
 		[
 			[-200, 100],
 			[200, 100]
+		],
+		[
+			[-200, 100],
+			[-200, -200]
+		],
+		[
+			[200, 100],
+			[200, -200]
 		]
 	]
 
@@ -104,8 +112,8 @@ class Robot:
 		while not gone:
 			for pt in self.tp:
 				for pr in self.rp:
-					print('pt', pt)
-					print('pr', pr)
+					print('TP', self.tp)
+					print('RP', self.rp)
 					if not self.intersectWall(pt[-1], pr[-1]):
 						pt.reverse()
 						self.path = pr
@@ -118,11 +126,10 @@ class Robot:
 		nrp = []
 		pr = self.precision
 		for p in self.tp:
-			print('p', p)
-			up = [p[-1][0], p[-1][1]+pr]
-			ri = [p[-1][0]+pr, p[-1][1]]
-			bo = [p[-1][0], p[-1][1]-pr]
-			le = [p[-1][0]-pr, p[-1][1]]
+			up = [p[-1][0], (p[-1][1])+pr]
+			ri = [(p[-1][0])+pr, p[-1][1]]
+			bo = [p[-1][0], (p[-1][1])-pr]
+			le = [(p[-1][0])-pr, p[-1][1]]
 			if not self.intersectWall(up, p[-1]):
 				np = []
 				for i in p:
@@ -147,28 +154,30 @@ class Robot:
 					np.append(i)
 				np.append(le)
 				ntp += [np]
+
+			print('NTP', ntp)
 		for p in self.rp:
-			up = [p[-1][0], p[-1][1]+pr]
-			ri = [p[-1][0]+pr, p[-1][1]]
-			bo = [p[-1][0], p[-1][1]-pr]
-			le = [p[-1][0]-pr, p[-1][1]]
+			up = [p[-1][0], (p[-1][1])+pr]
+			ri = [(p[-1][0])+pr, p[-1][1]]
+			bo = [p[-1][0], (p[-1][1])-pr]
+			le = [(p[-1][0])-pr, p[-1][1]]
 			if not self.intersectWall(up, p[-1]):
 				np = []
 				for i in p:
 					np.append(i)
-				np.append(le)
+				np.append(up)
 				nrp += [np]
 			if not self.intersectWall(ri, p[-1]):
 				np = []
 				for i in p:
 					np.append(i)
-				np.append(le)
+				np.append(ri)
 				nrp += [np]
 			if not self.intersectWall(bo, p[-1]):
 				np = []
 				for i in p:
 					np.append(i)
-				np.append(le)
+				np.append(bo)
 				nrp += [np]
 			if not self.intersectWall(le, p[-1]):
 				np = []
@@ -176,6 +185,8 @@ class Robot:
 					np.append(i)
 				np.append(le)
 				nrp += [np]
+			
+			print('NRP', nrp)
 		self.rp, self.tp = nrp, ntp
 			
 
