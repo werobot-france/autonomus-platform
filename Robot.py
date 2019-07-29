@@ -11,7 +11,7 @@ class Robot:
 	x = 0
 	y = 0
 	theta = 0
-	precision = 300
+	precision = 100
 	path = []
 	R = []
 	T = []
@@ -20,8 +20,8 @@ class Robot:
 
 	obstacles = [
 		[
-			[-300, 300],
-			[300, 300]
+			[-200, 100],
+			[200, 100]
 		]
 	]
 
@@ -104,88 +104,93 @@ class Robot:
 		while not gone:
 			for pt in self.tp:
 				for pr in self.rp:
-					gone = True
-					for mur in self.murs:
-						print('mur', mur)
-						print('pt', pt)
-						print('pr', pr)
-						if gone:
-							if self.intersect(pt[-1], pr[-1], mur[0], mur[1]):
-								gone = False
-								print('CAAAAAAN_____________________________________________________________________________________')
-							else:
-								print('CANANANANANNANANANANANAANANNANANNANANNANANNANANNANANANANANNA')
-			if gone:
-				pt.reverse()
-				self.path = pr
-				self.path += pt
-				return self.simplified(self.path)
+					print('pt', pt)
+					print('pr', pr)
+					if not self.intersectWall(pt[-1], pr[-1]):
+						pt.reverse()
+						self.path = pr
+						self.path += pt
+						return self.simplified(self.path)
 			self.expandPaths()
 
 	def expandPaths(self):
 		ntp = []
 		nrp = []
+		pr = self.precision
 		for p in self.tp:
 			print('p', p)
-			for mur in self.murs:
-				if (not self.intersect(p[-1], [p[-1][0], p[-1][1]+self.precision], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0], p[-1][1]+self.precision])
-					ntp.append(np)
-				if (not self.intersect(p[-1], [p[-1][0]+self.precision, p[-1][1]], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0]+self.precision, p[-1][1]])
-					ntp.append(np)
-				if (not self.intersect(p[-1], [p[-1][0], p[-1][1]-self.precision], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0], p[-1][1]-self.precision])
-					ntp.append(np)
-				if (not self.intersect(p[-1], [p[-1][0]-self.precision, p[-1][1]], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0]-self.precision, p[-1][1]])
-					ntp.append(np)
+			up = [p[-1][0], p[-1][1]+pr]
+			ri = [p[-1][0]+pr, p[-1][1]]
+			bo = [p[-1][0], p[-1][1]-pr]
+			le = [p[-1][0]-pr, p[-1][1]]
+			if not self.intersectWall(up, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(up)
+				ntp += [np]
+			if not self.intersectWall(ri, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(ri)
+				ntp += [np]
+			if not self.intersectWall(bo, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(bo)
+				ntp += [np]
+			if not self.intersectWall(le, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(le)
+				ntp += [np]
 		for p in self.rp:
-			for mur in self.murs:
-				if (not self.intersect(p[-1], [p[-1][0], p[-1][1]+self.precision], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0], p[-1][1]+self.precision])
-					nrp.append(np)
-				if (not self.intersect(p[-1], [p[-1][0]+self.precision, p[-1][1]], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0]+self.precision, p[-1][1]])
-					nrp.append(np)
-				if (not self.intersect(p[-1], [p[-1][0], p[-1][1]-self.precision], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0], p[-1][1]-self.precision])
-					nrp.append(np)
-				if (not self.intersect(p[-1], [p[-1][0]-self.precision, p[-1][1]], mur[0], mur[1])):
-					np = []
-					for i in p:
-						np.append(i)
-					np.append([p[-1][0]-self.precision, p[-1][1]])
-					nrp.append(np)
+			up = [p[-1][0], p[-1][1]+pr]
+			ri = [p[-1][0]+pr, p[-1][1]]
+			bo = [p[-1][0], p[-1][1]-pr]
+			le = [p[-1][0]-pr, p[-1][1]]
+			if not self.intersectWall(up, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(le)
+				nrp += [np]
+			if not self.intersectWall(ri, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(le)
+				nrp += [np]
+			if not self.intersectWall(bo, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(le)
+				nrp += [np]
+			if not self.intersectWall(le, p[-1]):
+				np = []
+				for i in p:
+					np.append(i)
+				np.append(le)
+				nrp += [np]
 		self.rp, self.tp = nrp, ntp
+			
 
 	def ccw(self, A, B, C):
 		return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
 
-	# Return true si ça se croise
+	# Retourne True si ça se croise
 	def intersect(self, A, B, C, D):
 		return self.ccw(A, C, D) != self.ccw(B, C, D) and self.ccw(A, B, C) != self.ccw(A, B, D)
+
+	def intersectWall(self, A, B):
+		for mur in self.murs:
+			if self.intersect(A, B, mur[0], mur[1]):
+				return True
+		return False
 
 	def stopMotors(self):
 		self.leftMotor.throttle = self.rightMotor.throttle = 0
