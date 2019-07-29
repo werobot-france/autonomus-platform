@@ -6,7 +6,7 @@ from math import pi
 robot = Robot()
 
 def main():
-    print(robot.getPath(-100, 800, 20))
+    print('PATH', robot.getPath(-100, 800, 20))
 
 try:
     main()

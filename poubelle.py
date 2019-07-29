@@ -11,7 +11,7 @@ class Robot:
 	x = 0
 	y = 0
 	theta = 0
-	precision = 120
+	precision = 300
 	path = []
 	R = []
 	T = []
@@ -20,60 +20,12 @@ class Robot:
 
 	obstacles = [
 		[
-			[201, 101],
-			[-201, 101]
-		],
-		[
-			[-201, 101],
-			[-201, -201]
-		],
-		[
-			[201, 101],
-			[201, -201]
-		],
-		[
-			[301, 901],
-			[301, 701]
-		],
-		[
-			[301, 701],
-			[101, 701]
-		],
-		[
-			[101, 701],
-			[101, 301]
-		],
-		[
-			[101, 301],
-			[1, 301]
-		],
-		[
-			[1, 301],
-			[1, 601]
-		],
-		[
-			[1, 601],
-			[-101, 601]
-		],
-		[
-			[-101, 601],
-			[-101, 501]
-		],
-		[
-			[-101, 501],
-			[-701, 501]
-		],
-		[
-			[-201, 501],
-			[-201, 901]
-		],
-		[
-			[-201, 501],
-			[1, 901]
+			[-300, 300],
+			[300, 300]
 		]
 	]
 
-	murs = obstacles  # modifié pour prendre en compte l'épaisseur
+	murs = obstacles  # modifiés pour prendre en compte l'épaisseur
 
 	def __init__(self):
 		self.positionWatcher = PositionWatcher()
@@ -137,13 +89,6 @@ class Robot:
 			self.goToOrientation(endOrientation)
 
 	def simplified(self, path):
-		for p in path:
-			for mur in self.murs:
-				if p != path[-1] and p != path[-2]:
-					if not self.intersect(mur[0], mur[1], p, path[path.index(p)+2]):
-						path.remove(path[path.index(p)+1])
-			print('pathd', path)
-		path.remove(path[0])
 		return(path)
 
 	def getPath(self, tX, tY, threehold=20, endOrientation=None):
@@ -154,23 +99,27 @@ class Robot:
 		self.tp = [[self.T]]
 		self.rp = [[self.R]]
 
-		while not False:  # lol
+		gone = False
+
+		while not gone:
 			for pt in self.tp:
 				for pr in self.rp:
+					gone = True
 					for mur in self.murs:
 						print('mur', mur)
-						print('tp', self.tp)
-						print('rp', self.rp)
-						print('R', self.R)
-						print('T', self.T)
 						print('pt', pt)
 						print('pr', pr)
-						if not self.intersect(pt[-1], pr[-1], mur[0], mur[1]):
-							pt.reverse()
-							self.path = pr
-							self.path += pt
-							self.path.remove(self.path[0])
-							return self.simplified(self.path)
+						if gone:
+							if self.intersect(pt[-1], pr[-1], mur[0], mur[1]):
+								gone = False
+								print('CAAAAAAN_____________________________________________________________________________________')
+							else:
+								print('CANANANANANNANANANANANAANANNANANNANANNANANNANANNANANANANANNA')
+			if gone:
+				pt.reverse()
+				self.path = pr
+				self.path += pt
+				return self.simplified(self.path)
 			self.expandPaths()
 
 	def expandPaths(self):
