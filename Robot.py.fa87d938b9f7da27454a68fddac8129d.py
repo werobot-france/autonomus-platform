@@ -3,8 +3,6 @@ from adafruit_crickit import crickit
 from math import pi, atan2, sqrt
 from time import sleep
 import matplotlib.pyplot as plt
-from mat import *
-
 
 class Robot:
 	leftMotor = crickit.dc_motor_1
@@ -13,7 +11,7 @@ class Robot:
 	x = 0
 	y = 0
 	theta = 0
-	precision = 180
+	precision = 350
 	path = []
 	R = []
 	T = []
@@ -32,64 +30,16 @@ class Robot:
 		[
 			[200, 100],
 			[200, -200]
-		],
-		[
-			[300, 900],
-			[300, 700]
-		],
-		[
-			[300, 700],
-			[100, 700]
-		],
-		[
-			[100, 700],
-			[100, 300]
-		],
-		[
-			[100, 300],
-			[0, 300]
-		],
-		[
-			[0, 300],
-			[0, 600]
-		],
-		[
-			[0, 600],
-			[-100, 600]
-		],
-		[
-			[-100, 600],
-			[-100, 500]
-		],
-		[
-			[-100, 500],
-			[-700, 500]
-		],
-		[
-			[-200, 500],
-			[-200, 900]
-		],
-		[
-			[-200, 900],
-			[0, 900]
-		],
-		[
-			[-700, 1300],
-			[700, 1300]
-		],
-		[
-			[700, 1300],
-			[700, -500]
-		],
-		[
-			[-700, -500],
-			[700, -500]
-		],
-		[
-			[-700, -500],
-			[-700, 1300]
 		]
 	]
+		
+	fig, ax = plt.subplots()
+	for o in obstacles:
+		b = [[o[0][0], o[1][0], [o[0][0], o[1][0]]
+		print(o)
+		ax.add_line(MyLine(o[0], o[1]))
+
+plt.show()
 
 	murs = obstacles  # modifiés pour prendre en compte l'épaisseur
 
@@ -155,42 +105,7 @@ class Robot:
 			self.goToOrientation(endOrientation)
 
 	def simplified(self, path):
-		simple = False
-		fpath = path
-		while not simple:
-			can = True
-			for p in fpath:
-				if len(fpath) >1:
-					if p != fpath[-1] and p != fpath[-2] and p != fpath[-3]:
-						if not self.intersectWall(p, fpath[fpath.index(p)+2]):
-							fpath.remove(fpath[fpath.index(p)+1])
-							can = False
-			simple = can
-		self.path = fpath
-		print('PATH', fpath)
-		self.display()
-		return(fpath)
-
-	def display(self):
-		fig, ax = plt.subplots()
-		for o in self.obstacles:
-			b = [[o[0][0], o[1][0]], [o[0][1], o[1][1]]]
-			ax.add_line(MyLine(b[0], b[1]))
-
-		for p in range(len(self.path)):
-			if (self.path[p] != self.path[-1]):
-				o = [self.path[p],self.path[p+1]]
-			b = [[o[0][0], o[1][0]], [o[0][1], o[1][1]]]
-			L = MyLine(b[0], b[1])
-			L.set_color((1,0,0,1))
-			ax.add_line(L)
-		
-		plt.plot([self.R[0], self.T[0]], [self.R[1], self.T[1]], 'ro' )
-		plt.axis([-1310, 1310, -1310, 1310])
-		plt.annotate('Target', xy=self.T)
-		plt.annotate('Robot', xy=self.R)
-		fig.suptitle('Sismologie', fontsize=16, color=(1,0,0,1))
-		plt.show()
+		return(path)
 
 	def getPath(self, tX, tY, threehold=20, endOrientation=None):
 		x = self.positionWatcher.getPos()[0]
@@ -205,22 +120,13 @@ class Robot:
 		while not gone:
 			for pt in self.tp:
 				for pr in self.rp:
-					print('TP', pt)
-					print('RP', pr)
+					print('TP', self.tp)
+					print('RP', self.rp)
 					if not self.intersectWall(pt[-1], pr[-1]):
 						pt.reverse()
 						self.path = pr
 						self.path += pt
-						a=0
-						can = True
-						for p in self.path:
-							if len(p) > 2:
-								if (p[a] != p[-1] and p[a] != p[-2]):
-									if self.intersectWall(p[a], p[a+1]):
-										can = False
-								a+=1
-						if can:
-							return self.simplified(self.path)
+						return self.simplified(self.path)
 			self.expandPaths()
 
 	def expandPaths(self):
@@ -287,9 +193,10 @@ class Robot:
 					np.append(i)
 				np.append(le)
 				nrp += [np]
-
+			
 			print('NRP', nrp)
 		self.rp, self.tp = nrp, ntp
+			
 
 	def ccw(self, A, B, C):
 		return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
@@ -315,5 +222,3 @@ class Robot:
 			self.fetch()
 			print(self.x, self.y, self.theta * 180/pi)
 			sleep(0.1)
-
-		
