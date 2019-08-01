@@ -6,7 +6,7 @@ from math import pi
 robot = Robot()
 
 def main():
-    robot.getPath(80, 140)  # startingrobotX, startingrobotY, targetX, tegetY
+    Robot.getPath(20, 10, 80, 140)  # startingrobotX, startingrobotY, targetX, tegetY
 
 try:
     main()

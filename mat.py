@@ -15,14 +15,6 @@ class MyLine(lines.Line2D):
         # initiated
         self.text.set_text(self.get_label())
 
-    def set_figure(self, figure):
-        self.text.set_figure(figure)
-        lines.Line2D.set_figure(self, figure)
-
-    def set_axes(self, axes):
-        self.text.set_axes(axes)
-        lines.Line2D.set_axes(self, axes)
-
     def set_transform(self, transform):
         # 2 pixel offset
         texttrans = transform + mtransforms.Affine2D().translate(2, 2)
