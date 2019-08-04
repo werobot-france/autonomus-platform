@@ -1,12 +1,14 @@
-from Robot import Robot
+from Robot import *
 from sys import exit
 from os import _exit
 from math import pi
 
 robot = Robot()
+path = PathGetter()
 
 def main():
-    robot.getPath(0, 500)  # startingrobotX, startingrobotY, targetX, tegetY
+    robot.goToPath(path.getPath(600, 1300))  # startingrobotX, startingrobotY, targetX, tegetY
+
 
 try:
     main()

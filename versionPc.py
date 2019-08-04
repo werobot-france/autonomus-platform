@@ -48,19 +48,12 @@ class Robot:
 	tp = [T]
 	path = []
 	rp = [R]
-	precision = 34
+	precision = 16
 
 	times = 0
 	step = 10
-	
-	obstacles = [
-		[
-			[200, 100],
-			[-200, 100]
-		]
-	]
 
-	obstcacles = [
+	obstacles = [
 		[
 			[0, 0],
 			[0, 150]
@@ -255,6 +248,7 @@ def display(title, stuck=False):
 	fig.suptitle(title, fontsize=16, color=(1, 0, 0, 1))
 	plt.show()
 
+
 def displayP(title, R, T, p):
 	fig, ax = plt.subplots()
 	for o in Robot.obstacles:
@@ -384,6 +378,8 @@ def ccw(A, B, C):
 	return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
 
 # Retourne True si ça se croise
+
+
 def intersect(A, B, C, D):
 	return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
 
@@ -395,12 +391,11 @@ def intersectWall(A, B):
 	return False
 
 
-
 title = "lel"
 p = []
-R = [0,0]
-T = [0,0]
+R = [0, 0]
+T = [0, 0]
 if p == []:
-	getPath(0, 0, 0, 500)  # startingrobotX, startingrobotY, targetX, tegetY
+	getPath(20, 10, 80, 140)  # startingrobotX, startingrobotY, targetX, tegetY
 else:
 	displayP(title, R, T, p)

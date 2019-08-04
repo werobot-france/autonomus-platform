@@ -10,26 +10,6 @@ class Robot:
 	x = 0
 	y = 0
 	theta = 0
-	R = [x, y]
-	T = [0, 0]
-	tp = [T]
-	path = []
-	rp = [R]
-	precision = 34
-
-	obstacles = [
-		[
-			[200, 100],
-			[-200, 100]
-		]
-	]
-
-	for o in obstacles:
-		for o2 in o:
-			o2[0] -= 20
-			o2[1] -= 10
-
-	murs = obstacles  # modifiés pour prendre en compte l'épaisseur
 
 	def __init__(self):
 		self.positionWatcher = PositionWatcher()
@@ -40,8 +20,9 @@ class Robot:
 		self.y = self.positionWatcher.getPos()[1]
 		self.theta = self.positionWatcher.getOrientation()
 
-	def gotToPath(self, path, threehold=20, endOrientation=None):
+	def goToPath(self, path, threehold=20, endOrientation=None):
 		for p in path:
+			print(path.index(p)+1, '/', len(path)+1, ':   ', p[0], p[1])
 			self.goTo(p[0], p[1])
 
 	def goToOrientation(self, targetTheta):
@@ -84,6 +65,94 @@ class Robot:
 		if (endOrientation != None):
 			self.goToOrientation(endOrientation)
 
+
+	def stopMotors(self):
+		self.leftMotor.throttle = self.rightMotor.throttle = 0
+	def stopThreads(self):
+		self.positionWatcher.stop()
+	def logState(self):
+		while True:
+			self.fetch()
+			print(self.x, self.y, self.theta * 180/pi)
+			sleep(0.1)
+
+
+class PathGetter:
+	R = [0, 0]
+	T = [0, 0]
+	tp = [T]
+	path = []
+	rp = [R]
+	precision = 160
+
+	obstacles = [
+		[
+			[0, 0],
+			[0, 150]
+		],
+		[
+			[0, 0],
+			[150, 0]
+		],
+		[
+			[150, 0],
+			[150, 150]
+		],
+		[
+			[150, 150],
+			[0, 150]
+		],
+		[
+			[0, 40],
+			[110, 40]
+		],
+		[
+			[70, 40],
+			[70, 20]
+		],
+		[
+			[110, 40],
+			[110, 50]
+		],
+		[
+			[150, 100],
+			[110, 100]
+		],
+		[
+			[110, 70],
+			[110, 100]
+		],
+		[
+			[110, 70],
+			[70, 70]
+		],
+		[
+			[40, 90],
+			[90, 90]
+		],
+		[
+			[70, 100],
+			[70, 130]
+		],
+		[
+			[90, 50],
+			[90, 70]
+		]
+	]
+	for o in obstacles:
+		for o2 in o:
+			o2[0] *= 10
+			o2[1] *= 10
+			o2[0] -= 200
+			o2[1] -= 100
+
+	murs = obstacles  # modifiés pour prendre en compte l'épaisseur
+	print(obstacles)
+
+	def __init__(self):
+		Robot.positionWatcher = PositionWatcher()
+		Robot.positionWatcher.start()
+
 	def getP(self, p, i):
 		pr = self.precision
 
@@ -105,7 +174,6 @@ class Robot:
 			for t in self.tp:
 				if [t[0], t[1]] == [a[0], a[1]]:
 					return t
-
 
 	def simplified(self, pr, pt):
 		r, t = [pr], [pt]
@@ -133,16 +201,20 @@ class Robot:
 		print(
 			'_________________________________________[PATH]_________________________________________')
 		print(fpath)
+		print(
+			'________________________________________________________________________________________')
+		print()
+		print()
+		print()
 		self.path = [self.R] + fpath + [self.T]
 		return(fpath)
 
-
 	def getPath(self, tX, tY, threehold=20, endOrientation=None):
-		self.x = self.positionWatcher.getPos()[0]
-		self.y = self.positionWatcher.getPos()[1]
-		self.x = 0
-		self.y = 0
-		self.R = [self.x, self.y]
+		Robot.x = Robot.positionWatcher.getPos()[0]
+		Robot.y = Robot.positionWatcher.getPos()[1]
+		Robot.x = 20
+		Robot.y = 10
+		self.R = [Robot.x, Robot.y]
 		self.T = [tX, tY]
 		self.tp = [self.T]
 		self.rp = [self.R]
@@ -159,7 +231,6 @@ class Robot:
 						return self.simplified(pr, pt)
 			print('....')
 			self.expandPaths()
-
 
 	def expandPaths(self):
 		pr = self.precision
@@ -235,7 +306,6 @@ class Robot:
 					nrp += [le]
 		self.tp, self.rp = ntp, nrp
 
-
 	def ccw(self, A, B, C):
 		return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
 
@@ -243,20 +313,8 @@ class Robot:
 	def intersect(self, A, B, C, D):
 		return self.ccw(A, C, D) != self.ccw(B, C, D) and self.ccw(A, B, C) != self.ccw(A, B, D)
 
-
 	def intersectWall(self, A, B):
 		for mur in self.murs:
 			if self.intersect(A, B, mur[0], mur[1]):
 				return True
 		return False
-
-
-	def stopMotors(self):
-		self.leftMotor.throttle = self.rightMotor.throttle = 0
-	def stopThreads(self):
-		self.positionWatcher.stop()
-	def logState(self):
-		while True:
-			self.fetch()
-			print(self.x, self.y, self.theta * 180/pi)
-			sleep(0.1)
