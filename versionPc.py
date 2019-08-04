@@ -48,12 +48,10 @@ class Robot:
 	tp = [T]
 	path = []
 	rp = [R]
-	p = [[0, 28, 3], [0, 60, 3], [0, 92, 3], [0, 124, 3], [16, 140, 4], [32, 140, 4]]
 	precision = 16
 
 	times = 0
-	step = 155
-
+	step = 10
 	obstacles = [
 		[
 			[0, 0],
@@ -108,7 +106,65 @@ class Robot:
 			[90, 70]
 		]
 	]
+
+
+#	obstacles = [
+#		[
+#			[0, 0],
+#			[0, 150]
+#		],
+#		[
+#			[0, 0],
+#			[150, 0]
+#		],
+#		[
+#			[150, 0],
+#			[150, 150]
+#		],
+#		[
+#			[150, 150],
+#			[0, 150]
+#		],
+#		[
+#			[0, 40],
+#			[110, 40]
+#		],
+#		[
+#			[70, 40],
+#			[70, 20]
+#		],
+#		[
+#			[110, 40],
+#			[110, 50]
+#		],
+#		[
+#			[150, 100],
+#			[110, 100]
+#		],
+#		[
+#			[110, 70],
+#			[110, 100]
+#		],
+#		[
+#			[110, 70],
+#			[70, 70]
+#		],
+#		[
+#			[40, 90],
+#			[90, 90]
+#		],
+#		[
+#			[70, 100],
+#			[70, 130]
+#		],
+#		[
+#			[90, 50],
+#			[90, 70]
+#		]
+#	]
 	murs = obstacles  # modifiés pour prendre en compte l'épaisseur
+
+
 def getP(p, i):
 	pr = Robot.precision
 
@@ -125,11 +181,12 @@ def getP(p, i):
 		for r in Robot.rp:
 			if [r[0], r[1]] == [a[0], a[1]]:
 				return r
-	
+
 	if i == 't':
 		for t in Robot.tp:
 			if [t[0], t[1]] == [a[0], a[1]]:
 				return t
+
 
 def simplified(pr, pt):
 	r, t = [pr], [pt]
@@ -145,7 +202,6 @@ def simplified(pr, pt):
 	r.reverse()
 	fpath = r + t + [Robot.T]
 
-
 	for f in fpath:
 		can = True
 		for p in fpath:
@@ -153,14 +209,15 @@ def simplified(pr, pt):
 				fpath.remove(fpath[fpath.index(p)-1])
 			else:
 				can = False
-	
 
 	print('')
-	print('_________________________________________[PATH]_________________________________________')
+	print(
+		'_________________________________________[PATH]_________________________________________')
 	print(fpath)
 	Robot.path = [Robot.R] + fpath + [Robot.T]
 	display('Sismologie')
 	return(fpath)
+
 
 def display(title, stuck=False):
 	fig, ax = plt.subplots()
@@ -168,11 +225,7 @@ def display(title, stuck=False):
 		b = [[o[0][0], o[1][0]], [o[0][1], o[1][1]]]
 		ax.add_line(MyLine(b[0], b[1]))
 
-	if Robot.p == []:
-		p = Robot.path
-	else: p = Robot.p
-
-	for p in range(len(p)):
+	for p in range(len(Robot.path)):
 		if (Robot.path[p] != Robot.path[-1]):
 			o = [Robot.path[p], Robot.path[p+1]]
 		b = [[o[0][0], o[1][0]], [o[0][1], o[1][1]]]
@@ -194,6 +247,28 @@ def display(title, stuck=False):
 	fig.suptitle(title, fontsize=16, color=(1, 0, 0, 1))
 	plt.show()
 
+def displayP(title, R, T, p):
+	fig, ax = plt.subplots()
+	for o in Robot.obstacles:
+		b = [[o[0][0], o[1][0]], [o[0][1], o[1][1]]]
+		ax.add_line(MyLine(b[0], b[1]))
+
+	for i in range(len(p)):
+		if (p[i] != p[-1]):
+			o = [p[i], p[i+1]]
+		b = [[o[0][0], o[1][0]], [o[0][1], o[1][1]]]
+		L = MyLine(b[0], b[1])
+		L.set_color((1, 0, 0, 1))
+		ax.add_line(L)
+
+	plt.plot([R[0]], [R[1]], 'bs')
+	plt.plot([T[0]], [T[1]], 'rs')
+	plt.axis([-5, 155, -5, 155])
+	plt.annotate('T', xy=T)
+	plt.annotate('expert', xy=R)
+	fig.suptitle(title, fontsize=16, color=(1, 0, 0, 1))
+	plt.show()
+
 
 def getPath(rX, rY, tX, tY, threehold=20, endOrientation=None):
 	Robot.x = rX
@@ -202,7 +277,6 @@ def getPath(rX, rY, tX, tY, threehold=20, endOrientation=None):
 	Robot.T = [tX, tY]
 	Robot.tp = [Robot.T]
 	Robot.rp = [Robot.R]
-
 	#display("pitit aperçu")
 
 	gone = False
@@ -221,7 +295,6 @@ def getPath(rX, rY, tX, tY, threehold=20, endOrientation=None):
 		if Robot.times == Robot.step:
 			display('g du mal...', True)
 			Robot.times = 0
-
 
 
 def expandPaths():
@@ -303,9 +376,9 @@ def ccw(A, B, C):
 	return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
 
 # Retourne True si ça se croise
-
 def intersect(A, B, C, D):
 	return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
+
 
 def intersectWall(A, B):
 	for mur in Robot.murs:
@@ -313,4 +386,13 @@ def intersectWall(A, B):
 			return True
 	return False
 
-getPath(20, 10, 80, 140)  # startingrobotX, startingrobotY, targetX, tegetY
+
+
+title = "lel"
+p = []
+R = [0,0]
+T = [0,0]
+if p == []:
+	getPath(20, 10, 80, 140)  # startingrobotX, startingrobotY, targetX, tegetY
+else:
+	displayP(title, R, T, p)
