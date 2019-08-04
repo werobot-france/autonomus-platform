@@ -48,11 +48,19 @@ class Robot:
 	tp = [T]
 	path = []
 	rp = [R]
-	precision = 16
+	precision = 34
 
 	times = 0
 	step = 10
+	
 	obstacles = [
+		[
+			[200, 100],
+			[-200, 100]
+		]
+	]
+
+	obstcacles = [
 		[
 			[0, 0],
 			[0, 150]
@@ -393,6 +401,6 @@ p = []
 R = [0,0]
 T = [0,0]
 if p == []:
-	getPath(20, 10, 80, 140)  # startingrobotX, startingrobotY, targetX, tegetY
+	getPath(0, 0, 0, 500)  # startingrobotX, startingrobotY, targetX, tegetY
 else:
 	displayP(title, R, T, p)

@@ -1,4 +1,4 @@
-from RobotPls import Robot
+from Robot import Robot
 from sys import exit
 from os import _exit
 from math import pi
@@ -6,7 +6,7 @@ from math import pi
 robot = Robot()
 
 def main():
-    robot.getPath(20, 10, 80, 140)  # startingrobotX, startingrobotY, targetX, tegetY
+    robot.getPath(0, 500)  # startingrobotX, startingrobotY, targetX, tegetY
 
 try:
     main()
